@@ -451,6 +451,12 @@ public class AHBottomNavigation extends FrameLayout {
 			return;
 		}
 
+		if (tabSelectedListener != null) {
+			boolean selectionAllowed = tabSelectedListener.onTabSelected(itemIndex, false);
+			if (!selectionAllowed) return;
+		}
+
+
 		int activeMarginTop = (int) resources.getDimension(R.dimen.bottom_navigation_margin_top_active);
 		int inactiveMarginTop = (int) resources.getDimension(R.dimen.bottom_navigation_margin_top_inactive);
 		float activeSize = resources.getDimension(R.dimen.bottom_navigation_text_size_active);
@@ -563,6 +569,11 @@ public class AHBottomNavigation extends FrameLayout {
 				tabSelectedListener.onTabSelected(itemIndex, true);
 			}
 			return;
+		}
+
+		if (tabSelectedListener != null) {
+			boolean selectionAllowed = tabSelectedListener.onTabSelected(itemIndex, false);
+			if (!selectionAllowed) return;
 		}
 
 		int activeMarginTop = (int) resources.getDimension(R.dimen.bottom_navigation_small_margin_top_active);
@@ -1188,7 +1199,7 @@ public class AHBottomNavigation extends FrameLayout {
 	 *
 	 */
 	public interface OnTabSelectedListener {
-		void onTabSelected(int position, boolean wasSelected);
+		boolean onTabSelected(int position, boolean wasSelected);
 	}
 
 }

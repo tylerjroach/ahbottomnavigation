@@ -59,7 +59,7 @@ public class DemoActivity extends AppCompatActivity {
 
 		bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
 			@Override
-			public void onTabSelected(int position, boolean wasSelected) {
+			public boolean onTabSelected(int position, boolean wasSelected) {
 
 				if (position == 1) {
 					bottomNavigation.setNotification("", 1);
@@ -142,6 +142,7 @@ public class DemoActivity extends AppCompatActivity {
 				} else if (position > 0) {
 					currentFragment.refresh();
 				}
+				return true;
 			}
 		});
 
