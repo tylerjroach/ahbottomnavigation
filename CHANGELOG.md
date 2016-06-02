@@ -1,6 +1,21 @@
 ## Changelog
 
-### Newest version: 1.2.0
+### Newest version: 1.2.3
+
+* Added `setUseElevation(boolean useElevation, float elevation)`
+* Fixed a bug with `behaviorTranslationEnabled` & `restoreBottomNavigation`
+* Improved translation behavior when the Scroll View is not long enough.
+
+### 1.2.2
+
+* Fixed bug when switching between normal and colored mode
+
+### 1.2.1
+
+* Fixed method typo `setNotificationMarginLef` => `setNotificationMarginLeft`
+* Avoid multiple call for showing/hiding AHBottomNavigation
+
+### 1.2.0
 
 * Updated Notification: now accept String (empty String to remove the notification)
 * Deprecated integer for Notification

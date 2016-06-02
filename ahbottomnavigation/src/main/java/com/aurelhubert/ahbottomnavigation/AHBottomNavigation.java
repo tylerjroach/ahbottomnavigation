@@ -74,6 +74,7 @@ public class AHBottomNavigation extends FrameLayout {
 	//private int accentColor = Color.WHITE;
 	//private int inactiveColor = Color.WHITE;
 	private @ColorInt int itemActiveColor, itemInactiveColor;
+	private @ColorInt int titleColorActive, titleColorInactive;
 	private @ColorInt int coloredTitleColorActive, coloredTitleColorInactive;
 	private float titleActiveTextSize, titleInactiveTextSize;
 	private int bottomNavigationHeight;
@@ -159,11 +160,14 @@ public class AHBottomNavigation extends FrameLayout {
 		bottomNavigationHeight = (int) resources.getDimension(R.dimen.bottom_navigation_height);
 
 		// Item colors
-		itemActiveColor = ContextCompat.getColor(context, R.color.colorBottomNavigationAccent);
-		itemInactiveColor = ContextCompat.getColor(context, R.color.colorBottomNavigationInactive);
+		titleColorActive = ContextCompat.getColor(context, R.color.colorBottomNavigationAccent);
+		titleColorInactive = ContextCompat.getColor(context, R.color.colorBottomNavigationInactive);
 		// Colors for colored bottom navigation
 		coloredTitleColorActive = ContextCompat.getColor(context, R.color.colorBottomNavigationActiveColored);
 		coloredTitleColorInactive = ContextCompat.getColor(context, R.color.colorBottomNavigationInactiveColored);
+
+		itemActiveColor = titleColorActive;
+		itemInactiveColor = titleColorInactive;
 
 		// Notifications
 		notificationActiveMarginLeft = (int) resources.getDimension(R.dimen.bottom_navigation_notification_margin_left_active);
@@ -814,8 +818,8 @@ public class AHBottomNavigation extends FrameLayout {
 	 */
 	public void setColored(boolean colored) {
 		this.colored = colored;
-		this.itemActiveColor = colored ? coloredTitleColorActive : itemActiveColor;
-		this.itemInactiveColor = colored ? coloredTitleColorInactive : itemInactiveColor;
+		this.itemActiveColor = colored ? coloredTitleColorActive : titleColorActive;
+		this.itemInactiveColor = colored ? coloredTitleColorInactive : titleColorInactive;
 		createItems();
 	}
 
@@ -853,6 +857,7 @@ public class AHBottomNavigation extends FrameLayout {
 	 * @param accentColor The new accent color
 	 */
 	public void setAccentColor(int accentColor) {
+		this.titleColorActive = accentColor;
 		this.itemActiveColor = accentColor;
 		createItems();
 	}
@@ -872,6 +877,7 @@ public class AHBottomNavigation extends FrameLayout {
 	 * @param inactiveColor The inactive color
 	 */
 	public void setInactiveColor(int inactiveColor) {
+		this.titleColorInactive = inactiveColor;
 		this.itemInactiveColor = inactiveColor;
 		createItems();
 	}
@@ -966,7 +972,11 @@ public class AHBottomNavigation extends FrameLayout {
 		this.behaviorTranslationEnabled = behaviorTranslationEnabled;
 		if (getParent() instanceof CoordinatorLayout) {
 			ViewGroup.LayoutParams params = getLayoutParams();
-			bottomNavigationBehavior = new AHBottomNavigationBehavior<>(behaviorTranslationEnabled);
+			if (bottomNavigationBehavior == null) {
+				bottomNavigationBehavior = new AHBottomNavigationBehavior<>(behaviorTranslationEnabled);
+			} else {
+				bottomNavigationBehavior.setBehaviorTranslationEnabled(behaviorTranslationEnabled);
+			}
 			((CoordinatorLayout.LayoutParams) params).setBehavior(bottomNavigationBehavior);
 			if (needHideBottomNavigation) {
 				needHideBottomNavigation = false;
@@ -1188,6 +1198,16 @@ public class AHBottomNavigation extends FrameLayout {
 	public void setUseElevation(boolean useElevation) {
 		ViewCompat.setElevation(this, useElevation ?
 				resources.getDimension(R.dimen.bottom_navigation_elevation) : 0);
+		setClipToPadding(false);
+	}
+
+	/**
+	 * Activate or not the elevation, and set the value
+	 * @param useElevation boolean
+	 * @param elevation float
+	 */
+	public void setUseElevation(boolean useElevation, float elevation) {
+		ViewCompat.setElevation(this, useElevation ? elevation : 0);
 		setClipToPadding(false);
 	}
 
