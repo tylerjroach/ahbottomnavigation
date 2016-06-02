@@ -64,7 +64,7 @@ public class DemoActivity extends AppCompatActivity {
 				currentFragment = adapter.getCurrentFragment();
 				if (wasSelected) {
 					currentFragment.refresh();
-					return;
+					return true;
 				}
 				viewPager.setCurrentItem(position, false);
 				currentFragment.willBeDisplayed();
