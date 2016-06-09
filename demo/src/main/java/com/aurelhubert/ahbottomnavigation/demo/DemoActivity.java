@@ -61,12 +61,17 @@ public class DemoActivity extends AppCompatActivity {
 			@Override
 			public boolean onTabSelected(int position, boolean wasSelected) {
 
-				currentFragment = adapter.getCurrentFragment();
 				if (wasSelected) {
 					currentFragment.refresh();
 					return true;
 				}
+
+				if (currentFragment != null) {
+					currentFragment.willBeHidden();
+				}
+
 				viewPager.setCurrentItem(position, false);
+				currentFragment = adapter.getCurrentFragment();
 				currentFragment.willBeDisplayed();
 
 				if (position == 1) {
@@ -139,6 +144,7 @@ public class DemoActivity extends AppCompatActivity {
 								.start();
 					}
 				}
+
 				return true;
 			}
 		});

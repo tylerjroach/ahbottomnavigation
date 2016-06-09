@@ -30,8 +30,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigationBehavior.OnYTranslationListener;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +37,7 @@ import java.util.List;
  * AHBottomNavigationLayout
  * Material Design guidelines : https://www.google.com/design/spec/components/bottom-navigation.html
  */
-public class AHBottomNavigation extends FrameLayout implements
-		OnYTranslationListener {
+public class AHBottomNavigation extends FrameLayout {
 
 	// Constant
 	public static final int CURRENT_ITEM_NONE = -1;
@@ -53,7 +50,6 @@ public class AHBottomNavigation extends FrameLayout implements
 
 	// Listener
 	private OnTabSelectedListener tabSelectedListener;
-	private AHBottomNavigationBehavior.OnYTranslationListener yTranslationListener;
 
 	// Variables
 	private Context context;
@@ -75,11 +71,24 @@ public class AHBottomNavigation extends FrameLayout implements
 	// Variables (Styles)
 	private Typeface titleTypeface;
 	private int defaultBackgroundColor = Color.WHITE;
-	//private int accentColor = Color.WHITE;
-	//private int inactiveColor = Color.WHITE;
-	private @ColorInt int itemActiveColor, itemInactiveColor;
-	private @ColorInt int titleColorActive, titleColorInactive;
-	private @ColorInt int coloredTitleColorActive, coloredTitleColorInactive;
+	private
+	@ColorInt
+	int itemActiveColor;
+	private
+	@ColorInt
+	int itemInactiveColor;
+	private
+	@ColorInt
+	int titleColorActive;
+	private
+	@ColorInt
+	int titleColorInactive;
+	private
+	@ColorInt
+	int coloredTitleColorActive;
+	private
+	@ColorInt
+	int coloredTitleColorInactive;
 	private float titleActiveTextSize, titleInactiveTextSize;
 	private int bottomNavigationHeight;
 	private float selectedItemWidth, notSelectedItemWidth;
@@ -87,11 +96,16 @@ public class AHBottomNavigation extends FrameLayout implements
 	private boolean forceTitlesDisplay = false;
 
 	// Notifications
-	private @ColorInt int notificationTextColor;
-	private @ColorInt int notificationBackgroundColor;
+	private
+	@ColorInt
+	int notificationTextColor;
+	private
+	@ColorInt
+	int notificationBackgroundColor;
 	private Drawable notificationBackgroundDrawable;
 	private Typeface notificationTypeface;
 	private int notificationActiveMarginLeft, notificationInactiveMarginLeft;
+	private int notificationActiveMarginTop, notificationInactiveMarginTop;
 
 	/**
 	 * Constructors
@@ -176,6 +190,8 @@ public class AHBottomNavigation extends FrameLayout implements
 		// Notifications
 		notificationActiveMarginLeft = (int) resources.getDimension(R.dimen.bottom_navigation_notification_margin_left_active);
 		notificationInactiveMarginLeft = (int) resources.getDimension(R.dimen.bottom_navigation_notification_margin_left);
+		notificationActiveMarginTop = (int) resources.getDimension(R.dimen.bottom_navigation_notification_margin_top_active);
+		notificationInactiveMarginTop = (int) resources.getDimension(R.dimen.bottom_navigation_notification_margin_top);
 
 		ViewCompat.setElevation(this, resources.getDimension(R.dimen.bottom_navigation_elevation));
 		setClipToPadding(false);
@@ -293,6 +309,7 @@ public class AHBottomNavigation extends FrameLayout implements
 			}
 
 			if (i == currentItem) {
+				icon.setSelected(true);
 				// Update margins (icon & notification)
 				if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
 					ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) icon.getLayoutParams();
@@ -306,6 +323,7 @@ public class AHBottomNavigation extends FrameLayout implements
 					view.requestLayout();
 				}
 			} else {
+				icon.setSelected(false);
 				ViewGroup.MarginLayoutParams paramsNotification = (ViewGroup.MarginLayoutParams)
 						notification.getLayoutParams();
 				paramsNotification.setMargins(notificationInactiveMarginLeft, paramsNotification.topMargin,
@@ -323,7 +341,7 @@ public class AHBottomNavigation extends FrameLayout implements
 
 			icon.setImageDrawable(AHHelper.getTintDrawable(items.get(i).getDrawable(context),
 					currentItem == i ? itemActiveColor : itemInactiveColor, forceTint));
-			title.setTextColor(currentItem == i ? itemActiveColor :itemInactiveColor);
+			title.setTextColor(currentItem == i ? itemActiveColor : itemInactiveColor);
 			title.setTextSize(TypedValue.COMPLEX_UNIT_PX, currentItem == i ? activeSize : inactiveSize);
 			view.setOnClickListener(new OnClickListener() {
 				@Override
@@ -395,6 +413,7 @@ public class AHBottomNavigation extends FrameLayout implements
 			}
 
 			if (i == currentItem) {
+				icon.setSelected(true);
 				// Update margins (icon & notification)
 				if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
 					ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) icon.getLayoutParams();
@@ -402,15 +421,16 @@ public class AHBottomNavigation extends FrameLayout implements
 
 					ViewGroup.MarginLayoutParams paramsNotification = (ViewGroup.MarginLayoutParams)
 							notification.getLayoutParams();
-					paramsNotification.setMargins(notificationActiveMarginLeft, paramsNotification.topMargin,
+					paramsNotification.setMargins(notificationActiveMarginLeft, notificationActiveMarginTop,
 							paramsNotification.rightMargin, paramsNotification.bottomMargin);
 
 					view.requestLayout();
 				}
 			} else {
+				icon.setSelected(false);
 				ViewGroup.MarginLayoutParams paramsNotification = (ViewGroup.MarginLayoutParams)
 						notification.getLayoutParams();
-				paramsNotification.setMargins(notificationInactiveMarginLeft, paramsNotification.topMargin,
+				paramsNotification.setMargins(notificationInactiveMarginLeft, notificationInactiveMarginTop,
 						paramsNotification.rightMargin, paramsNotification.bottomMargin);
 			}
 
@@ -459,11 +479,10 @@ public class AHBottomNavigation extends FrameLayout implements
 			return;
 		}
 
-		if (tabSelectedListener != null) {
+		if (tabSelectedListener != null && useCallback) {
 			boolean selectionAllowed = tabSelectedListener.onTabSelected(itemIndex, false);
 			if (!selectionAllowed) return;
 		}
-
 
 		int activeMarginTop = (int) resources.getDimension(R.dimen.bottom_navigation_margin_top_active);
 		int inactiveMarginTop = (int) resources.getDimension(R.dimen.bottom_navigation_margin_top_inactive);
@@ -486,6 +505,7 @@ public class AHBottomNavigation extends FrameLayout implements
 				final ImageView icon = (ImageView) views.get(itemIndex).findViewById(R.id.bottom_navigation_item_icon);
 				final TextView notification = (TextView) views.get(itemIndex).findViewById(R.id.bottom_navigation_notification);
 
+				icon.setSelected(true);
 				AHHelper.updateTopMargin(icon, inactiveMarginTop, activeMarginTop);
 				AHHelper.updateLeftMargin(notification, notificationInactiveMarginLeft, notificationActiveMarginLeft);
 				AHHelper.updateTextColor(title, itemInactiveColor, itemActiveColor);
@@ -542,6 +562,7 @@ public class AHBottomNavigation extends FrameLayout implements
 				final ImageView icon = (ImageView) views.get(currentItem).findViewById(R.id.bottom_navigation_item_icon);
 				final TextView notification = (TextView) views.get(currentItem).findViewById(R.id.bottom_navigation_notification);
 
+				icon.setSelected(false);
 				AHHelper.updateTopMargin(icon, activeMarginTop, inactiveMarginTop);
 				AHHelper.updateLeftMargin(notification, notificationActiveMarginLeft, notificationInactiveMarginLeft);
 				AHHelper.updateTextColor(title, itemActiveColor, itemInactiveColor);
@@ -559,9 +580,11 @@ public class AHBottomNavigation extends FrameLayout implements
 			backgroundColorView.setBackgroundColor(Color.TRANSPARENT);
 		}
 
+		/*
 		if (tabSelectedListener != null && useCallback) {
 			tabSelectedListener.onTabSelected(itemIndex, false);
 		}
+		*/
 	}
 
 	/**
@@ -579,7 +602,7 @@ public class AHBottomNavigation extends FrameLayout implements
 			return;
 		}
 
-		if (tabSelectedListener != null) {
+		if (tabSelectedListener != null && useCallback) {
 			boolean selectionAllowed = tabSelectedListener.onTabSelected(itemIndex, false);
 			if (!selectionAllowed) return;
 		}
@@ -596,8 +619,10 @@ public class AHBottomNavigation extends FrameLayout implements
 				final ImageView icon = (ImageView) views.get(itemIndex).findViewById(R.id.bottom_navigation_small_item_icon);
 				final TextView notification = (TextView) views.get(itemIndex).findViewById(R.id.bottom_navigation_notification);
 
+				icon.setSelected(true);
 				AHHelper.updateTopMargin(icon, inactiveMargin, activeMarginTop);
 				AHHelper.updateLeftMargin(notification, notificationInactiveMarginLeft, notificationActiveMarginLeft);
+				AHHelper.updateTopMargin(notification, notificationInactiveMarginTop, notificationActiveMarginTop);
 				AHHelper.updateTextColor(title, itemInactiveColor, itemActiveColor);
 				AHHelper.updateAlpha(title, 0, 1);
 				AHHelper.updateWidth(container, notSelectedItemWidth, selectedItemWidth);
@@ -653,8 +678,10 @@ public class AHBottomNavigation extends FrameLayout implements
 				final ImageView icon = (ImageView) views.get(currentItem).findViewById(R.id.bottom_navigation_small_item_icon);
 				final TextView notification = (TextView) views.get(currentItem).findViewById(R.id.bottom_navigation_notification);
 
+				icon.setSelected(false);
 				AHHelper.updateTopMargin(icon, activeMarginTop, inactiveMargin);
 				AHHelper.updateLeftMargin(notification, notificationActiveMarginLeft, notificationInactiveMarginLeft);
+				AHHelper.updateTopMargin(notification, notificationActiveMarginTop, notificationInactiveMarginTop);
 				AHHelper.updateTextColor(title, itemActiveColor, itemInactiveColor);
 				AHHelper.updateAlpha(title, 1, 0);
 				AHHelper.updateWidth(container, selectedItemWidth, notSelectedItemWidth);
@@ -672,9 +699,11 @@ public class AHBottomNavigation extends FrameLayout implements
 			backgroundColorView.setBackgroundColor(Color.TRANSPARENT);
 		}
 
+		/*
 		if (tabSelectedListener != null && useCallback) {
 			tabSelectedListener.onTabSelected(itemIndex, false);
 		}
+		*/
 	}
 
 	/**
@@ -981,8 +1010,6 @@ public class AHBottomNavigation extends FrameLayout implements
 			} else {
 				bottomNavigationBehavior.setBehaviorTranslationEnabled(behaviorTranslationEnabled);
 			}
-
-			bottomNavigationBehavior.setYTranslationListener(this);
 			((CoordinatorLayout.LayoutParams) params).setBehavior(bottomNavigationBehavior);
 			if (needHideBottomNavigation) {
 				needHideBottomNavigation = false;
@@ -1099,20 +1126,6 @@ public class AHBottomNavigation extends FrameLayout implements
 	}
 
 	/**
-	 * Set AHOnYTranslationListener
-	 */
-	public void setOnYTranslationListner(OnYTranslationListener yTranslationListener) {
-		this.yTranslationListener = yTranslationListener;
-	}
-
-	/**
-	 * Remove AHOnYTranslationListener()
-	 */
-	public void removeOnYTranslationListener() {
-		this.yTranslationListener = null;
-	}
-
-	/**
 	 * Set the notification number
 	 *
 	 * @param nbNotification int
@@ -1131,7 +1144,7 @@ public class AHBottomNavigation extends FrameLayout implements
 	/**
 	 * Set Notification content
 	 *
-	 * @param title String
+	 * @param title        String
 	 * @param itemPosition int
 	 */
 	public void setNotification(String title, int itemPosition) {
@@ -1201,6 +1214,7 @@ public class AHBottomNavigation extends FrameLayout implements
 
 	/**
 	 * Set the notification margin left
+	 *
 	 * @param activeMargin
 	 * @param inactiveMargin
 	 */
@@ -1223,21 +1237,14 @@ public class AHBottomNavigation extends FrameLayout implements
 
 	/**
 	 * Activate or not the elevation, and set the value
+	 *
 	 * @param useElevation boolean
-	 * @param elevation float
+	 * @param elevation    float
 	 */
 	public void setUseElevation(boolean useElevation, float elevation) {
 		ViewCompat.setElevation(this, useElevation ? elevation : 0);
 		setClipToPadding(false);
 	}
-
-
-	@Override public void onYTranslation(int y) {
-		if (yTranslationListener != null) {
-			yTranslationListener.onYTranslation(y);
-		}
-	}
-
 
 	////////////////
 	// INTERFACES //
@@ -1247,6 +1254,14 @@ public class AHBottomNavigation extends FrameLayout implements
 	 *
 	 */
 	public interface OnTabSelectedListener {
+		/**
+		 * Called when a tab has been selected (clicked)
+		 *
+		 * @param position    int: Position of the selected tab
+		 * @param wasSelected boolean: true if the tab was already selected
+		 * @return boolean: true for updating the tab UI, false otherwise
+		 */
 		boolean onTabSelected(int position, boolean wasSelected);
 	}
+
 }
